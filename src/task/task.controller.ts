@@ -1,16 +1,17 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { Task } from './schemas/task.schema';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import {Query as ExpressQuery} from "express-serve-static-core";
 
 @Controller('task')
 export class TaskController {
     constructor (private taskService: TaskService ){}
 
     @Get()
-    async getAllTasks(): Promise<Task[]>{
-        return this.taskService.findAll();
+    async getAllTasks(@Query() query: ExpressQuery): Promise<Task[]>{
+        return this.taskService.findAll(query);
     }
 
     @Post()

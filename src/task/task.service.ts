@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose'
 import { Task } from './schemas/task.schema';
+import {Query} from "express-serve-static-core";
 
 @Injectable()
 export class TaskService {
@@ -10,8 +11,20 @@ export class TaskService {
         private taskModel: mongoose.Model<Task>
     ) {}
 
-    async findAll():Promise<Task[]>{
-        const tasks=await this.taskModel.find();
+    async findAll(query: Query):Promise<Task[]>{
+
+        const resPerPage=2;
+        const currentPage=Number(query.page) || 1
+        const skip=resPerPage * (currentPage-1)
+        
+        const keyword=query.keyword ? {
+            title: {
+                $regex: query.keyword,
+                $options: 'i'
+            }
+        } : {}
+
+        const tasks=await this.taskModel.find({...keyword}).limit(resPerPage).skip(skip);
         return tasks;
     }
 
