@@ -1,9 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { Task } from './schemas/task.schema';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import {Query as ExpressQuery} from "express-serve-static-core";
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('task')
 export class TaskController {
@@ -15,11 +16,13 @@ export class TaskController {
     }
 
     @Post()
+    @UseGuards(AuthGuard())
     async createTask(
         @Body()
         task: CreateTaskDto,
+        @Req() req,
     ): Promise<Task>{
-        return this.taskService.create(task)
+        return this.taskService.create(task,req.user)
     }
 
     @Get(':id')
@@ -31,7 +34,7 @@ export class TaskController {
     }
 
     @Put(":id")
-    async updateBook(
+    async updateTask(
         @Param('id')
         id: string,
         @Body()

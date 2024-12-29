@@ -1,4 +1,6 @@
-import { IsDate, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { Transform } from "class-transformer";
+import { IsDate, IsEmpty, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { User } from "../../auth/schemas/user.schema";
 
 
 export class UpdateTaskDto{
@@ -22,11 +24,16 @@ export class UpdateTaskDto{
         @IsString()
         readonly category: string;
     
+        @Transform(({ value }) => new Date(value))
         @IsOptional()
         @IsDate()
         readonly start_date: Date;
     
+        @Transform(({ value }) => new Date(value))
         @IsOptional()
         @IsDate()
         readonly end_date: Date;
+
+        @IsEmpty({message: "You cannot pass user id"})
+        readonly user: User
 }
