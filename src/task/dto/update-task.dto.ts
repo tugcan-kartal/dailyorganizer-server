@@ -1,32 +1,32 @@
-import { IsDate, IsNotEmpty, IsString } from "class-validator";
+import { IsDate, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 
 export class UpdateTaskDto{
-        @IsNotEmpty()
+        @IsOptional()
         @IsString()
         readonly title: string;
     
-        @IsNotEmpty()
+        @IsOptional()
         @IsString()
         readonly description: string;
     
-        @IsNotEmpty()
+        @IsOptional()
         @IsString()
         readonly author: string;
     
-        @IsNotEmpty()
+        @IsOptional()
         @IsString()
         readonly importance_level: string;
     
-        @IsNotEmpty()
+        @IsOptional()
         @IsString()
         readonly category: string;
     
-        @IsNotEmpty()
+        @IsOptional()
         @IsDate()
         readonly start_date: Date;
     
-        @IsNotEmpty()
+        @IsOptional()
         @IsDate()
         readonly end_date: Date;
 }

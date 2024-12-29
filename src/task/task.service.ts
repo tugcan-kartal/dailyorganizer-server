@@ -34,6 +34,11 @@ export class TaskService {
     }
 
     async findById(id: string): Promise<Task>{
+        const isValidId=mongoose.isValidObjectId(id);
+        if(!isValidId){
+            throw new BadRequestException("Please enter correct id.")
+        }
+
         const task=await this.taskModel.findById(id);
         if(!task){
             throw new NotFoundException("Task not found")
