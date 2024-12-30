@@ -8,11 +8,14 @@ import { AuthGuard } from '@nestjs/passport';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 @Controller('task')
 export class TaskController {
     constructor (private taskService: TaskService ){}
 
+    // @SkipThrottle()
+    // @Throttle({default: {limit: 3, ttl: 2000}});
     @Get()
     @Roles(Role.Moderator,Role.Admin)
     @UseGuards(AuthGuard(),RolesGuard)
