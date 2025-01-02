@@ -17,11 +17,12 @@ export class TaskController {
     // @SkipThrottle()
     // @Throttle({default: {limit: 3, ttl: 2000}});
     @Get()
-    @Roles(Role.Moderator,Role.Admin)
-    @UseGuards(AuthGuard(),RolesGuard)
-    async getAllTasks(@Query() query: ExpressQuery): Promise<Task[]>{
-        return this.taskService.findAll(query);
-    }
+    // @Roles(Role.Moderator,Role.Admin)
+    @UseGuards(AuthGuard())
+    async getAllTasks(@Query() query: ExpressQuery,@Req() req): Promise<Task[]>{
+        const userId=req.user._id;
+        return this.taskService.findAll({...query,user: userId});
+    }   
 
     @Post()
     @UseGuards(AuthGuard())

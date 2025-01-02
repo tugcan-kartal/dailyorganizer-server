@@ -12,21 +12,25 @@ export class TaskService {
         private taskModel: mongoose.Model<Task>
     ) {}
 
-    async findAll(query: Query):Promise<Task[]>{
+    // async findAll(query: Query):Promise<Task[]>{
 
-        const resPerPage=2;
-        const currentPage=Number(query.page) || 1
-        const skip=resPerPage * (currentPage-1)
+    //     const resPerPage=2;
+    //     const currentPage=Number(query.page) || 1
+    //     const skip=resPerPage * (currentPage-1)
         
-        const keyword=query.keyword ? {
-            title: {
-                $regex: query.keyword,
-                $options: 'i'
-            }
-        } : {}
+    //     const keyword=query.keyword ? {
+    //         title: {
+    //             $regex: query.keyword,
+    //             $options: 'i'
+    //         }
+    //     } : {}
 
-        const tasks=await this.taskModel.find({...keyword}).limit(resPerPage).skip(skip);
-        return tasks;
+    //     const tasks=await this.taskModel.find({...keyword}).limit(resPerPage).skip(skip);
+    //     return tasks;
+    // }
+
+    async findAll(filter: any):Promise<Task[]>{
+        return this.taskModel.find(filter).exec();
     }
 
     async create(task: Task,user: User):Promise<Task>{
