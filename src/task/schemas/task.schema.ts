@@ -27,6 +27,9 @@ export class Task{
     @Prop()
     end_date: Date;
 
+    @Prop({default: 0})
+    order: number;
+
     @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User'})
     user: User;
 
