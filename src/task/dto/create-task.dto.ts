@@ -13,10 +13,6 @@ export class CreateTaskDto{
 
     @IsNotEmpty()
     @IsString()
-    readonly author: string;
-
-    @IsNotEmpty()
-    @IsString()
     readonly importance_level: string;
 
     @IsNotEmpty()

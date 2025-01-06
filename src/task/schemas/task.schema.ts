@@ -16,9 +16,6 @@ export class Task{
     description: string;
 
     @Prop()
-    author: string;
-
-    @Prop()
     importance_level: string;
 
     @Prop()

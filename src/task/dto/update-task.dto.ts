@@ -14,10 +14,6 @@ export class UpdateTaskDto{
     
         @IsOptional()
         @IsString()
-        readonly author: string;
-    
-        @IsOptional()
-        @IsString()
         readonly importance_level: string;
     
         @IsOptional()
