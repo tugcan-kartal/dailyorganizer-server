@@ -30,7 +30,7 @@ export class TaskService {
     // }
 
     async findAll(filter: any):Promise<Task[]>{
-        return this.taskModel.find(filter).exec();
+        return this.taskModel.find(filter).sort({ order: 1 }).exec();
     }
 
     async create(task: Task,user: User):Promise<Task>{
@@ -59,6 +59,15 @@ export class TaskService {
             runValidators: true,
         })
     }
+
+    async updateOrder(id: string, order: number): Promise<Task> {
+        return await this.taskModel.findByIdAndUpdate(
+          id,
+          { order },
+          { new: true, runValidators: true }
+        );
+      }
+      
 
     async deleteById(id: string){
         return await this.taskModel.findByIdAndDelete(id);
