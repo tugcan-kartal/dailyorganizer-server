@@ -4,6 +4,7 @@ import * as mongoose from 'mongoose'
 import { Task } from './schemas/task.schema';
 import {Query} from "express-serve-static-core";
 import { User } from '../auth/schemas/user.schema';
+import { uploadImagesAws } from 'src/utils/aws';
 
 @Injectable()
 export class TaskService {
@@ -71,6 +72,23 @@ export class TaskService {
 
     async deleteById(id: string){
         return await this.taskModel.findByIdAndDelete(id);
+    }
+
+    async uploadImages(id: string,files: Array<Express.Multer.File>){
+        const task=await this.taskModel.findById(id);
+
+        if(!task){
+            throw new NotFoundException("Task not found");
+        }
+
+        const images=await uploadImagesAws(files);
+
+        task.images=images as object[];
+
+        await task.save();
+
+        return task;
+
     }
 
 }

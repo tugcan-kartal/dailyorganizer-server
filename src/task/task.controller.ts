@@ -3,12 +3,16 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Post,
   Put,
   Query,
   Req,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { Task } from './schemas/task.schema';
@@ -20,6 +24,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 import { Role } from 'src/auth/enums/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 @Controller('task')
 export class TaskController {
@@ -80,4 +85,27 @@ export class TaskController {
   ): Promise<Task> {
     return this.taskService.deleteById(id);
   }
+
+  @Put('upload/:id')
+  @UseGuards(AuthGuard())
+  @UseInterceptors(FilesInterceptor('files'))
+  async updateImages(
+    @Param('id') id: string,
+    @UploadedFiles(
+      new ParseFilePipeBuilder().addFileTypeValidator({
+        fileType: /(jpg|jpeg|png)$/
+      })
+      .addMaxSizeValidator({
+        maxSize: 1000 * 1000,
+        message: "File size must be less than 1MB"
+      })
+      .build({
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+      }),
+    ) files: Array<Express.Multer.File>,
+  ){
+    return this.taskService.uploadImages(id,files);
+  }
+    
+
 }

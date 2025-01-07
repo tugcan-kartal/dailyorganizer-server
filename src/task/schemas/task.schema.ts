@@ -22,6 +22,9 @@ export class Task{
     category: string;
 
     @Prop()
+    images?: object[]
+
+    @Prop()
     start_date: Date;
 
     @Prop()
