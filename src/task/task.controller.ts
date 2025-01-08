@@ -51,7 +51,7 @@ export class TaskController {
           fileType: /(jpg|jpeg|png)$/,
         })
         .addMaxSizeValidator({
-          maxSize: 1000 * 1000, // 1MB
+          maxSize: 10 * 1000 * 1000, // 1MB
           message: 'File size must be less than 1MB',
         })
         .build({
