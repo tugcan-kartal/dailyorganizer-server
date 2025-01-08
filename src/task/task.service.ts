@@ -34,12 +34,22 @@ export class TaskService {
         return this.taskModel.find(filter).sort({ order: 1 }).exec();
     }
 
-    async create(task: Task,user: User):Promise<Task>{
-        const data=Object.assign(task, {user: user._id})
-
-        const res=await this.taskModel.create(data);
-        return res;
-    }
+    async create(task: Task, user: User): Promise<Task> {
+        const data = { ...task, user: user._id }; // Merge task with user data
+        const createdTask = await this.taskModel.create(data);
+        return createdTask;
+      }
+      
+      async uploadImagesAws(files: Array<Express.Multer.File>): Promise<object[]> {
+        if (!files || files.length === 0) {
+          return [];
+        }
+      
+        // Upload images to AWS or another storage service
+        const images = await uploadImagesAws(files);
+        return images as object[];
+      }
+      
 
     async findById(id: string): Promise<Task>{
         const isValidId=mongoose.isValidObjectId(id);
@@ -74,21 +84,21 @@ export class TaskService {
         return await this.taskModel.findByIdAndDelete(id);
     }
 
-    async uploadImages(id: string,files: Array<Express.Multer.File>){
-        const task=await this.taskModel.findById(id);
+    // async uploadImages(id: string,files: Array<Express.Multer.File>){
+    //   const task=await this.taskModel.findById(id);
 
-        if(!task){
-            throw new NotFoundException("Task not found");
-        }
+    //   if(!task){
+    //       throw new NotFoundException("Task not found");
+    //   }
 
-        const images=await uploadImagesAws(files);
+    //   const images=await uploadImagesAws(files);
 
-        task.images=images as object[];
+    //   task.images=images as object[];
 
-        await task.save();
+    //   await task.save();
 
-        return task;
+    //   return task;
 
-    }
+    // }
 
 }

@@ -34,6 +34,9 @@ export class UpdateTaskDto{
         @IsOptional()
         readonly order: number;
 
+        @IsOptional()
+        images?: object[];
+
         @IsEmpty({message: "You cannot pass user id"})
         readonly user: User
 }

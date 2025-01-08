@@ -42,12 +42,36 @@ export class TaskController {
 
   @Post()
   @UseGuards(AuthGuard())
+  @UseInterceptors(FilesInterceptor('files'))
   async createTask(
-    @Body()
-    task: CreateTaskDto,
+    @Body() task: CreateTaskDto,
+    @UploadedFiles(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /(jpg|jpeg|png)$/,
+        })
+        .addMaxSizeValidator({
+          maxSize: 1000 * 1000, // 1MB
+          message: 'File size must be less than 1MB',
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    files: Array<Express.Multer.File>,
     @Req() req,
   ): Promise<Task> {
-    return this.taskService.create(task, req.user);
+    // Upload images if files are provided
+    const images =
+      files.length > 0 ? await this.taskService.uploadImagesAws(files) : [];
+
+    // Create the task with uploaded images
+    const createdTask = await this.taskService.create(
+      { ...task, images },
+      req.user,
+    );
+
+    return createdTask;
   }
 
   @Get(':id')
@@ -86,26 +110,25 @@ export class TaskController {
     return this.taskService.deleteById(id);
   }
 
-  @Put('upload/:id')
-  @UseGuards(AuthGuard())
-  @UseInterceptors(FilesInterceptor('files'))
-  async updateImages(
-    @Param('id') id: string,
-    @UploadedFiles(
-      new ParseFilePipeBuilder().addFileTypeValidator({
-        fileType: /(jpg|jpeg|png)$/
-      })
-      .addMaxSizeValidator({
-        maxSize: 1000 * 1000,
-        message: "File size must be less than 1MB"
-      })
-      .build({
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    ) files: Array<Express.Multer.File>,
-  ){
-    return this.taskService.uploadImages(id,files);
-  }
-    
+  // @Put('upload/:id')
+  // @UseGuards(AuthGuard())
+  // @UseInterceptors(FilesInterceptor('files'))
+  // async updateImages(
+  //   @Param('id') id: string,
+  //   @UploadedFiles(
+  //     new ParseFilePipeBuilder().addFileTypeValidator({
+  //       fileType: /(jpg|jpeg|png)$/
+  //     })
+  //     .addMaxSizeValidator({
+  //       maxSize: 1000 * 1000,
+  //       message: "File size must be less than 1MB"
+  //     })
+  //     .build({
+  //       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+  //     }),
+  //   ) files: Array<Express.Multer.File>,
+  // ){
+  //   return this.taskService.uploadImages(id,files);
+  // }
 
 }
