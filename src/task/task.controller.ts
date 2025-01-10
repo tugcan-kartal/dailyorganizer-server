@@ -37,7 +37,9 @@ export class TaskController {
   @UseGuards(AuthGuard())
   async getAllTasks(@Query() query: ExpressQuery, @Req() req): Promise<Task[]> {
     const userId = req.user._id;
-    return this.taskService.findAll({ ...query, user: userId });
+    const filter = { ...query, user: userId };
+    
+    return this.taskService.findAll(filter);
   }
 
   @Post()

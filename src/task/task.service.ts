@@ -30,8 +30,19 @@ export class TaskService {
     //     return tasks;
     // }
 
-    async findAll(filter: any):Promise<Task[]>{
-        return this.taskModel.find(filter).sort({ order: 1 }).exec();
+    async findAll(query: any): Promise<Task[]> {
+      const filter = { user: query.user }; // Kullanıcı bazlı filtreleme
+      const sort: [string, mongoose.SortOrder][] = []; // Dinamik sıralama
+      
+      // Sorgu filtresini işleme
+      if (query.filter) {
+          const [listBy, ascORdsc] = query.filter.split(':');
+          sort.push([listBy, ascORdsc === 'asc' ? 'asc' : 'desc']); // Artan ya da azalan sıralama
+      }
+
+      sort.push(['order', 1]);  // Veritabanındaki task 'order' alanına göre artan sıralama ekliyoruz
+      
+      return this.taskModel.find(filter).sort(sort).exec();
     }
 
     async create(task: Task, user: User): Promise<Task> {
