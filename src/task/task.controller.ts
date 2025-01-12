@@ -33,6 +33,7 @@ export class TaskController {
   // @SkipThrottle()
   // @Throttle({default: {limit: 3, ttl: 2000}});
   @Get()
+  @SkipThrottle()
   // @Roles(Role.Moderator,Role.Admin)
   @UseGuards(AuthGuard())
   async getAllTasks(@Query() query: ExpressQuery, @Req() req): Promise<Task[]> {
@@ -41,7 +42,7 @@ export class TaskController {
     
     return this.taskService.findAll(filter);
   }
-
+  
   @Post()
   @UseGuards(AuthGuard())
   @UseInterceptors(FilesInterceptor('files'))
@@ -77,6 +78,7 @@ export class TaskController {
   }
 
   @Get(':id')
+  @SkipThrottle()
   async getTask(
     @Param('id')
     id: string,
@@ -105,6 +107,7 @@ export class TaskController {
   }
 
   @Delete(':id')
+  @SkipThrottle()
   async deleteTask(
     @Param('id')
     id: string,
