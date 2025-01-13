@@ -6,28 +6,23 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TaskModule } from './task/task.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { ChatController } from './chat/chat.controller';
-import { ChatService } from './chat/chat.service';
 import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([
-      {
-        ttl: 5 * 1000,
-        limit: 3,
-      }
-    ]),
+    ThrottlerModule.forRoot({
+      throttlers: [{ ttl: 5, limit: 3 }], // 5 saniyelik süre ve 3 istek limiti
+    }),
     ConfigModule.forRoot({
       envFilePath: '.env',
-      isGlobal: true,
+      isGlobal: true, // Tüm uygulamada erişilebilir
     }),
-    MongooseModule.forRoot(process.env.DB_URI),
+    MongooseModule.forRoot(process.env.DB_URI), // MongoDB bağlantısı
     TaskModule,
     AuthModule,
-    ChatModule,
+    ChatModule, // ChatModule zaten ChatService ve ChatController'ı içeriyor
   ],
-  controllers: [AppController, ChatController],
-  providers: [AppService, ChatService],
+  controllers: [AppController], // AppController burada kalabilir
+  providers: [AppService], // AppService burada kalabilir
 })
 export class AppModule {}

@@ -1,8 +1,12 @@
 import { Transform } from "class-transformer";
 import {IsDate, IsEmpty, IsNotEmpty,IsNumber,IsOptional,IsString} from "class-validator";
 import { User } from "../../auth/schemas/user.schema";
+import mongoose from "mongoose";
 
 export class CreateTaskDto{
+    @IsOptional()
+    readonly _id?: mongoose.Types.ObjectId; // _id alanını ekledik
+
     @IsNotEmpty()
     @IsString()
     readonly title: string;

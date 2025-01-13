@@ -1,18 +1,19 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-import { Task } from "src/task/schemas/task.schema";
-import { User } from "src/auth/schemas/user.schema";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
-@Schema({ timestamps: true })
+@Schema()
 export class ChatContext extends Document {
-  @Prop({ type: String, required: true })
+  @Prop({ required: true })
   userId: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ required: true })
   taskId: string;
 
-  @Prop({ type: Object, required: true })
-  taskDetails: Partial<Task>;
+  @Prop({ type: Object })
+  taskDetails: any;
+
+  @Prop({ type: [{ message: String, timestamp: Date }], default: [] })
+  messages: { message: string; timestamp: Date }[];
 }
 
 export const ChatContextSchema = SchemaFactory.createForClass(ChatContext);

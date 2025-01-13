@@ -1,41 +1,58 @@
 import { Injectable } from '@nestjs/common';
-import { TaskService } from 'src/task/task.service';
-import { Task } from 'src/task/schemas/task.schema';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { ChatContext } from './schemas/ChatContext';
 import { analyze } from 'src/utils/openai';
+import { Task } from 'src/task/schemas/task.schema';
+import { TaskService } from 'src/task/task.service';
 
 @Injectable()
 export class ChatService {
-    private userContexts: Map<string, Task> = new Map();
-
-    constructor(private readonly taskService: TaskService) {} // TaskService burada enjeksiyonla alınıyor
+    constructor(
+        @InjectModel('ChatContext') private chatContextModel: Model<ChatContext>,
+        private taskService: TaskService,  // TaskService burada enjekte ediliyor
+    ) {}
 
     async prepareTaskContext(userId: string, task: Task): Promise<string> {
-        this.userContexts.set(userId, task);
-        console.log(`Bağlam Ayarlandı: UserId: ${userId}, Task: ${JSON.stringify(task)}`);
-        return `Task "${task.title}" bağlam olarak ayarlandı.`;
+        // Eski bağlamı bulup güncelleme
+        const existingContext = await this.chatContextModel.findOneAndUpdate(
+            { userId }, // Kullanıcıya ait
+            { 
+                taskId: task._id, 
+                taskDetails: task,
+                messages: [] // Yeni task'a ait eski mesajları temizleyebilirsiniz
+            },
+            { new: true, upsert: true } // Eğer bir bağlam yoksa yeni bir bağlam ekler
+        );
+    
+        return existingContext
+            ? `Task "${task.title}" bağlam olarak güncellendi.`
+            : `Task "${task.title}" bağlam olarak kaydedildi.`;
     }
+    
 
     async chatWithContext(userId: string, message: string): Promise<string> {
-        console.log(`Context Map: ${JSON.stringify(Array.from(this.userContexts.entries()))}`);
-        const task = this.userContexts.get(userId);
-    
-        if (!task) {
-            console.log(`Bağlam Bulunamadı: UserId: ${userId}`);
+        const context = await this.chatContextModel.findOne({ userId });
+
+        if (!context) {
             return 'Henüz bir task bağlamı ayarlamadınız.';
         }
-    
+
         const taskDetails = `
-        Task başlığı: "${task.title}".
-        Açıklama: "${task.description}".
-        Önem seviyesi: "${task.importance_level}".
-        Kategori: "${task.category}".
-        Başlangıç tarihi: "${task.start_date}".
-        Bitiş tarihi: "${task.end_date}".
+        Task başlığı: "${context.taskDetails.title}".
+        Açıklama: "${context.taskDetails.description}".
+        Önem seviyesi: "${context.taskDetails.importance_level}".
+        Kategori: "${context.taskDetails.category}".
+        Başlangıç tarihi: "${context.taskDetails.start_date}".
+        Bitiş tarihi: "${context.taskDetails.end_date}".
         `;
-    
+
         const prompt = `Bu task hakkında: ${taskDetails}. Kullanıcıdan gelen mesaj: "${message}".`;
-        console.log(`Prompt: ${prompt}`);
         const response = await analyze(prompt);
+
+        context.messages.push({ message, timestamp: new Date() });
+        await context.save();
+
         return response;
     }
 }

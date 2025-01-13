@@ -9,6 +9,8 @@ import { User } from "../../auth/schemas/user.schema";
 
 export class Task{
 
+    _id?: mongoose.Types.ObjectId; // _id alanını ekledik
+
     @Prop()
     title: string;
 
