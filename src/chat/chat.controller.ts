@@ -21,7 +21,10 @@ export class ChatController {
             return 'Task bulunamadı.';
         }
 
-        return this.chatService.prepareTaskContext(userId, task);
+        const contextMessage = await this.chatService.prepareTaskContext(userId, task);
+
+        // Return JSON response
+        return { message: contextMessage };
     }
 
     @Post('send-message')
