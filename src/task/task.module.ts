@@ -20,5 +20,6 @@ import { ThrottlerGuard } from '@nestjs/throttler';
       useClass: ThrottlerGuard,
     },
   ],
+  exports: [TaskService],
 })
 export class TaskModule {}

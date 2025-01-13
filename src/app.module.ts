@@ -6,6 +6,9 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TaskModule } from './task/task.module';
 import { AuthModule } from './auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ChatController } from './chat/chat.controller';
+import { ChatService } from './chat/chat.service';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -22,8 +25,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
     MongooseModule.forRoot(process.env.DB_URI),
     TaskModule,
     AuthModule,
+    ChatModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ChatController],
+  providers: [AppService, ChatService],
 })
 export class AppModule {}
