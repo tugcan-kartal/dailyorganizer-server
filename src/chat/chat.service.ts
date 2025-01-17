@@ -20,7 +20,6 @@ export class ChatService {
             { 
                 taskId: task._id, 
                 taskDetails: task,
-                messages: [] // Yeni task'a ait eski mesajları temizleyebilirsiniz
             },
             { new: true, upsert: true } // Eğer bir bağlam yoksa yeni bir bağlam ekler
         );
@@ -50,7 +49,7 @@ export class ChatService {
         const prompt = `Bu task hakkında: ${taskDetails}. Kullanıcıdan gelen mesaj: "${message}".`;
         const response = await analyze(prompt);
 
-        context.messages.push({ message, timestamp: new Date() });
+        context.messages.push({ message,response ,timestamp: new Date() });
         await context.save();
 
         return response;

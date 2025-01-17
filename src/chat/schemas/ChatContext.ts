@@ -13,7 +13,7 @@ export class ChatContext extends Document {
   taskDetails: any;
 
   @Prop({ type: [{ message: String, timestamp: Date }], default: [] })
-  messages: { message: string; timestamp: Date }[];
+  messages: { message: string; response: string; timestamp: Date }[];
 }
 
 export const ChatContextSchema = SchemaFactory.createForClass(ChatContext);
