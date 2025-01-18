@@ -12,7 +12,7 @@ export class ChatContext extends Document {
   @Prop({ type: Object })
   taskDetails: any;
 
-  @Prop({ type: [{ message: String, timestamp: Date }], default: [] })
+  @Prop({ type: [{ message: String,response: String,timestamp: Date }], default: [] })
   messages: { message: string; response: string; timestamp: Date }[];
 }
 

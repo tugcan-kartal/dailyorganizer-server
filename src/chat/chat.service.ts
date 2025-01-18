@@ -20,6 +20,7 @@ export class ChatService {
             { 
                 taskId: task._id, 
                 taskDetails: task,
+
             },
             { new: true, upsert: true } // Eğer bir bağlam yoksa yeni bir bağlam ekler
         );
@@ -54,4 +55,16 @@ export class ChatService {
 
         return response;
     }
+
+    async getChatHistory(userId: string, taskId: string): Promise<{ message: string; response: string; timestamp: Date }[]> {
+        const context = await this.chatContextModel.findOne({ userId, taskId });
+    
+        if (!context || !context.messages.length) {
+            return [];
+        }
+    
+        return context.messages;
+    }
+    
+    
 }

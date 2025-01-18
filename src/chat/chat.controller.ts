@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { TaskService } from 'src/task/task.service'; // TaskService'i import ediyoruz
 import { AuthGuard } from '@nestjs/passport';
@@ -35,4 +35,18 @@ export class ChatController {
         
         return {message: contextMessage};
     }
+
+    @Get('history/:taskId')
+    @UseGuards(AuthGuard('jwt'))
+    async getHistory(@Req() req, @Param('taskId') taskId: string) {
+        const userId = req.user._id;
+        const context = await this.chatService.getChatHistory(userId, taskId);
+
+        if (!context.length) {
+            return { messages: [] };
+        }
+
+        return { messages: context };
+    }
+
 }
