@@ -29,9 +29,10 @@ export class ChatController {
 
     @Post('send-message')
     @UseGuards(AuthGuard('jwt'))
-    async chat(@Body('message') message: string, @Req() req) {
+    async chat(@Body() body: {message: string, taskId: string}, @Req() req) {
+        const {message, taskId}=body;
         const userId = req.user._id;
-        const contextMessage=await this.chatService.chatWithContext(userId, message);
+        const contextMessage=await this.chatService.chatWithContext(userId, message, taskId);
         
         return {message: contextMessage};
     }

@@ -16,7 +16,7 @@ export class ChatService {
     async prepareTaskContext(userId: string, task: Task): Promise<string> {
         // Eski bağlamı bulup güncelleme
         const existingContext = await this.chatContextModel.findOneAndUpdate(
-            { userId }, // Kullanıcıya ait
+            { userId,taskId: task._id }, // bu satır find yapar ilk satır
             { 
                 taskId: task._id, 
                 taskDetails: task,
@@ -31,8 +31,8 @@ export class ChatService {
     }
     
 
-    async chatWithContext(userId: string, message: string): Promise<string> {
-        const context = await this.chatContextModel.findOne({ userId });
+    async chatWithContext(userId: string, message: string, taskId: string): Promise<string> {
+        const context = await this.chatContextModel.findOne({ userId, taskId });
 
         if (!context) {
             return 'Henüz bir task bağlamı ayarlamadınız.';
