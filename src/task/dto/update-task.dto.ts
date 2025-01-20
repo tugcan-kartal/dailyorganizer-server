@@ -38,6 +38,10 @@ export class UpdateTaskDto{
         @IsOptional()
         readonly order: number;
 
+        @IsString()
+        @IsOptional()
+        readonly status: string;
+
         @IsOptional()
         images?: object[];
 

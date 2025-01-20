@@ -35,6 +35,9 @@ export class Task{
     @Prop({default: 0})
     order: number;
 
+    @Prop({default: "process"})
+    status: string;
+
     @Prop({type: mongoose.Schema.Types.ObjectId, ref: 'User'})
     user: User;
 
