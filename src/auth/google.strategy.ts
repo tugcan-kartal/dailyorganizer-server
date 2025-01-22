@@ -4,25 +4,27 @@ import { Strategy, VerifyCallback } from "passport-google-oauth20";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { User } from "./schemas/user.schema";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     constructor(
         @InjectModel(User.name)
         private userModel: Model<User>,
+        private jwtService: JwtService, // JWT Servisi Enjekte Edildi
     ) {
         super({
-            clientID: process.env.GOOGLE_CLIENT_ID, // Google Client ID
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET, // Google Client Secret
-            callbackURL: process.env.GOOGLE_CALLBACK_URL, // Redirect URI
-            scope: ['email', 'profile'], // Google'dan istenen veriler
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+            callbackURL: process.env.GOOGLE_CALLBACK_URL,
+            scope: ['email', 'profile'],
         });
     }
 
     async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
         const { id, displayName, emails } = profile;
 
-        // Kullanıcıyı veritabanında bul veya oluştur
+        // Kullanıcıyı bul veya oluştur
         let user = await this.userModel.findOne({ googleId: id });
 
         if (!user) {
@@ -38,6 +40,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
             throw new UnauthorizedException('Google authentication failed.');
         }
 
-        done(null, user);
+        // Kullanıcı için JWT token oluştur
+        const token = this.jwtService.sign({ id: user._id });
+
+        done(null, { user, token }); // Token ve kullanıcı döndürülüyor
     }
 }

@@ -33,7 +33,12 @@ export class AuthController {
     @Get('/google/callback')
     @UseGuards(AuthGuard('google'))
     async googleAuthRedirect(@Req() req) {
-        // Google'dan dönen kullanıcı bilgileri burada işlenir
-        return req.user;
+        const { user, token } = req.user; // `user` ve `token` ayrıştırılıyor
+        return {
+            message: 'Google login successful',
+            user,
+            token, // Token'ı döndür
+        };
     }
+
 }
