@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query, UseGuards, Request } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, Request, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/signUp.dto';
 import { LoginDto } from './dto/login.dto';
@@ -22,5 +22,18 @@ export class AuthController {
     @UseGuards(AuthGuard("jwt"))
     async userDetails(@Request() req): Promise<any>{
         return req.user;      
+    }
+
+    @Get('/google')
+    @UseGuards(AuthGuard('google'))
+    async googleAuth() {
+        // Google ile kimlik doğrulama başlatılır
+    }
+
+    @Get('/google/callback')
+    @UseGuards(AuthGuard('google'))
+    async googleAuthRedirect(@Req() req) {
+        // Google'dan dönen kullanıcı bilgileri burada işlenir
+        return req.user;
     }
 }

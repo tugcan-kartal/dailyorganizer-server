@@ -13,13 +13,19 @@ export class User extends Document{
     email: string
 
     @Prop()
-    password: string
+    password?: string
 
     @Prop({
         type: [{type: String,enum: Role}],
         default: [Role.User],
     })
     role: Role[];
+
+    @Prop({ unique: true, sparse: true }) // Google kullanıcıları için Google ID
+    googleId?: string;
+
+    @Prop({ default: 'local' }) // Kimlik doğrulama sağlayıcısı (local/google)
+    provider: string;
 }
 
 export const UserSchema=SchemaFactory.createForClass(User);
