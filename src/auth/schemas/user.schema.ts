@@ -12,6 +12,7 @@ export class User extends Document{
     @Prop({unique: [true,'Duplicate email entered']})
     email: string
 
+    //Google kullanıcıları password girmek zorunda değil o yüzden ? işareti var
     @Prop()
     password?: string
 

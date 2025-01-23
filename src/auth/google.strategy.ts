@@ -21,6 +21,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         });
     }
 
+    //Burada signin olan kullanıcının ne gibi değerleri dönceğini ve database e kaydediyoruz yani işlemler burada oluyor authservice gibi
+
     async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
         const { id, displayName, emails } = profile;
 
@@ -40,7 +42,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
             throw new UnauthorizedException('Google authentication failed.');
         }
 
-        // Kullanıcı için JWT token oluştur
+        // Kullanıcı için JWT token oluşturduk jwtde yaptığımız gibi ve bu tokenı redirect ederek gönderiyoruz sunucuda clientda ise yakalıyoruz urlsearchparams ile
         const token = this.jwtService.sign({ id: user._id });
 
         done(null, { user, token }); // Token ve kullanıcı döndürülüyor
