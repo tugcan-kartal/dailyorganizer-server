@@ -37,6 +37,6 @@ export class AuthController {
     const { user, token } = req.user;
 
     // Token ve kullanıcı bilgileriyle özel bir sayfaya yönlendirin
-    res.redirect(`http://localhost:3001/user/signin?token=${token}`);
+    res.redirect(`https://tasklyadviserai.vercel.app/user/signin?token=${token}`);
   }
 }
